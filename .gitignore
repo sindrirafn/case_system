@@ -52,3 +52,34 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.*
+
+# Node / frontend
+node_modules/
+dist/
+coverage/
+
+# .NET / backend
+bin/
+obj/
+
+# SQLite / local DB
+*.db
+*.db-shm
+*.db-wal
+
+# User-specific files
+*.user
+*.suo
