@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCases } from "../api/casesApi";
 import type { CaseQueryParams } from "../types/case";
 import StatusBadge from "../components/StatusBadge";
+import { getUsers } from "../api/usersApi";
 
 function CasesPage() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ function CasesPage() {
   const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("");
   const [category, setCategory] = useState("");
+  const [assignedUserId, setAssignedUserId] = useState("");
 
   const queryParams: CaseQueryParams = useMemo(() => {
     const params: CaseQueryParams = {};
@@ -20,13 +22,19 @@ function CasesPage() {
     if (status) params.status = status;
     if (priority) params.priority = priority;
     if (category) params.category = category;
+    if (assignedUserId) params.assignedUserId = Number(assignedUserId);
 
     return params;
-  }, [search, status, priority, category]);
+  }, [search, status, priority, category, assignedUserId]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["cases", queryParams],
     queryFn: () => getCases(queryParams)
+  });
+
+  const { data: users } = useQuery({
+    queryKey: ["users"],
+    queryFn: getUsers
   });
 
   return (
@@ -97,6 +105,21 @@ function CasesPage() {
               <option value="Software">Software</option>
               <option value="Account">Account</option>
               <option value="Other">Other</option>
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="assignedUser">Assigned User</label>
+            <select
+              id="assignedUser"
+              value={assignedUserId}
+              onChange={(e) => setAssignedUserId(e.target.value)}
+            >
+              <option value="">All</option>
+              {users?.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.fullName}
+                </option>
+              ))}
             </select>
           </div>
         </div>
