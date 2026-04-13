@@ -238,4 +238,105 @@ public class CasesController : ControllerBase
 
         return CreatedAtAction(nameof(GetCaseById), new { id = createdCase.Id }, result);
     }
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<CaseDetailsDto>> UpdateCase(int id, UpdateCaseRequestDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Title))
+        {
+            return BadRequest("Title is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Description))
+        {
+            return BadRequest("Description is required.");
+        }
+
+        var caseItem = await _context.Cases.FirstOrDefaultAsync(c => c.Id == id);
+        if (caseItem == null)
+        {
+            return NotFound();
+        }
+
+        var customerExists = await _context.Customers.AnyAsync(c => c.Id == request.CustomerId);
+        if (!customerExists)
+        {
+            return BadRequest("Customer does not exist.");
+        }
+
+        if (request.AssignedUserId.HasValue)
+        {
+            var assignedUserExists = await _context.Users.AnyAsync(u => u.Id == request.AssignedUserId.Value);
+            if (!assignedUserExists)
+            {
+                return BadRequest("Assigned user does not exist.");
+            }
+        }
+
+        caseItem.Title = request.Title.Trim();
+        caseItem.Description = request.Description.Trim();
+        caseItem.Status = string.IsNullOrWhiteSpace(request.Status) ? caseItem.Status : request.Status.Trim();
+        caseItem.Priority = string.IsNullOrWhiteSpace(request.Priority) ? caseItem.Priority : request.Priority.Trim();
+        caseItem.Category = string.IsNullOrWhiteSpace(request.Category) ? caseItem.Category : request.Category.Trim();
+        caseItem.CustomerId = request.CustomerId;
+        caseItem.AssignedUserId = request.AssignedUserId;
+        caseItem.DueDate = request.DueDate;
+        caseItem.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        var updatedCase = await _context.Cases
+            .AsNoTracking()
+            .Include(c => c.Customer)
+            .Include(c => c.AssignedUser)
+            .Include(c => c.CreatedByUser)
+            .Include(c => c.Comments)
+                .ThenInclude(comment => comment.User)
+            .FirstAsync(c => c.Id == caseItem.Id);
+
+        var result = new CaseDetailsDto
+        {
+            Id = updatedCase.Id,
+            Title = updatedCase.Title,
+            Description = updatedCase.Description,
+            Status = updatedCase.Status,
+            Priority = updatedCase.Priority,
+            Category = updatedCase.Category,
+
+            CustomerId = updatedCase.CustomerId,
+            CustomerName = updatedCase.Customer?.Name ?? "",
+            CustomerEmail = updatedCase.Customer?.Email ?? "",
+            CustomerCompanyName = updatedCase.Customer?.CompanyName ?? "",
+            CustomerPhoneNumber = updatedCase.Customer?.PhoneNumber ?? "",
+
+            AssignedUserId = updatedCase.AssignedUserId,
+            AssignedUserName = updatedCase.AssignedUser != null
+                ? $"{updatedCase.AssignedUser.FirstName} {updatedCase.AssignedUser.LastName}"
+                : "",
+
+            CreatedByUserId = updatedCase.CreatedByUserId,
+            CreatedByUserName = updatedCase.CreatedByUser != null
+                ? $"{updatedCase.CreatedByUser.FirstName} {updatedCase.CreatedByUser.LastName}"
+                : "",
+
+            CreatedAt = updatedCase.CreatedAt,
+            UpdatedAt = updatedCase.UpdatedAt,
+            DueDate = updatedCase.DueDate,
+
+            Comments = updatedCase.Comments
+                .OrderBy(comment => comment.CreatedAt)
+                .Select(comment => new CaseCommentDto
+                {
+                    Id = comment.Id,
+                    UserId = comment.UserId,
+                    UserName = comment.User != null
+                        ? $"{comment.User.FirstName} {comment.User.LastName}"
+                        : "",
+                    Content = comment.Content,
+                    CreatedAt = comment.CreatedAt
+                })
+                .ToList()
+        };
+
+        return Ok(result);
+    }
 }
