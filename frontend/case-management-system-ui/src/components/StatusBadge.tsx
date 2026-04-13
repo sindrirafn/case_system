@@ -1,3 +1,5 @@
+import styles from "./StatusBadge.module.css";
+
 interface StatusBadgeProps {
   label: string;
 }
@@ -5,19 +7,19 @@ interface StatusBadgeProps {
 function StatusBadge({ label }: StatusBadgeProps) {
   const normalized = label.toLowerCase();
 
-  let className = "badge";
+  let variantClass = "";
 
-  if (normalized === "new") className += " badge--new";
-  else if (normalized === "inprogress") className += " badge--inprogress";
-  else if (normalized === "waitingforcustomer") className += " badge--waiting";
-  else if (normalized === "resolved") className += " badge--resolved";
-  else if (normalized === "closed") className += " badge--closed";
-  else if (normalized === "critical") className += " badge--critical";
-  else if (normalized === "high") className += " badge--high";
-  else if (normalized === "medium") className += " badge--medium";
-  else if (normalized === "low") className += " badge--low";
+  if (normalized === "new") variantClass = styles.new;
+  else if (normalized === "inprogress") variantClass = styles.inProgress;
+  else if (normalized === "waitingforcustomer") variantClass = styles.waiting;
+  else if (normalized === "resolved") variantClass = styles.resolved;
+  else if (normalized === "closed") variantClass = styles.closed;
+  else if (normalized === "critical") variantClass = styles.critical;
+  else if (normalized === "high") variantClass = styles.high;
+  else if (normalized === "medium") variantClass = styles.medium;
+  else if (normalized === "low") variantClass = styles.low;
 
-  return <span className={className}>{label}</span>;
+  return <span className={`${styles.badge} ${variantClass}`}>{label}</span>;
 }
 
 export default StatusBadge;

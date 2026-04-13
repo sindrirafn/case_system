@@ -7,6 +7,7 @@ import { getUsers } from "../api/usersApi";
 import { getCustomers } from "../api/customersApi";
 import type { UpdateCaseRequest } from "../types/case";
 import StatusBadge from "../components/StatusBadge";
+import styles from "./CaseDetailsPage.module.css";
 
 function formatDateTime(value: string | null) {
   if (!value) return "—";
@@ -152,30 +153,30 @@ function CaseDetailsPage() {
   }
 
   return (
-    <section className="case-details-page">
-      <div className="page-header">
+    <section className={styles.caseDetailsPage}>
+      <div className={styles.pageHeader}>
         <div>
           <h2>Case Details</h2>
           <p>Review and update the selected case.</p>
         </div>
       </div>
 
-      <div className="details-grid">
-        <div className="details-main">
-          <div className="panel">
-            <div className="details-heading">
+      <div className={styles.detailsGrid}>
+        <div className={styles.detailsMain}>
+          <div className={styles.panel}>
+            <div className={styles.detailsHeading}>
               <div>
                 <h3>{caseItem.title}</h3>
                 <p>{caseItem.customerName}</p>
               </div>
 
-              <div className="case-card__badges">
+              <div className={styles.caseCardBadges}>
                 <StatusBadge label={caseItem.status} />
                 <StatusBadge label={caseItem.priority} />
               </div>
             </div>
 
-            <div className="details-meta">
+            <div className={styles.detailsMeta}>
               <span><strong>Category:</strong> {caseItem.category}</span>
               <span><strong>Assigned:</strong> {caseItem.assignedUserName || "Unassigned"}</span>
               <span><strong>Created by:</strong> {caseItem.createdByUserName}</span>
@@ -184,22 +185,22 @@ function CaseDetailsPage() {
               <span><strong>Due:</strong> {formatDateTime(caseItem.dueDate)}</span>
             </div>
 
-            <div className="details-description">
+            <div className={styles.detailsDescription}>
               <h4>Description</h4>
               <p>{caseItem.description}</p>
             </div>
           </div>
 
-          <div className="panel">
+          <div className={styles.panel}>
             <h3>Comments</h3>
 
             {caseItem.comments.length === 0 ? (
               <p>No comments yet.</p>
             ) : (
-              <div className="comments-list">
+              <div className={styles.commentsList}>
                 {caseItem.comments.map((comment) => (
-                  <div key={comment.id} className="comment-item">
-                    <div className="comment-item__top">
+                  <div key={comment.id} className={styles.commentItem}>
+                    <div className={styles.commentItemTop}>
                       <strong>{comment.userName}</strong>
                       <span>{formatDateTime(comment.createdAt)}</span>
                     </div>
@@ -209,8 +210,8 @@ function CaseDetailsPage() {
               </div>
             )}
 
-            <form className="stack-form" onSubmit={handleCommentSubmit}>
-              <div className="field">
+            <form className={styles.stackForm} onSubmit={handleCommentSubmit}>
+              <div className={styles.field}>
                 <label htmlFor="commentContent">Add Comment</label>
                 <textarea
                   id="commentContent"
@@ -221,27 +222,27 @@ function CaseDetailsPage() {
                 />
               </div>
 
-              <div className="form-actions">
+              <div className={styles.formActions}>
                 <button
                   type="submit"
-                  className="primary-button"
+                  className={styles.primaryButton}
                   disabled={addCommentMutation.isPending}
                 >
                   {addCommentMutation.isPending ? "Adding..." : "Add Comment"}
                 </button>
               </div>
 
-              {commentMessage && <p className="form-message">{commentMessage}</p>}
+              {commentMessage && <p className={styles.formMessage}>{commentMessage}</p>}
             </form>
           </div>
         </div>
 
-        <aside className="details-sidebar">
-          <div className="panel">
+        <aside className={styles.detailsSidebar}>
+          <div className={styles.panel}>
             <h3>Edit Case</h3>
 
-            <form className="stack-form" onSubmit={handleUpdateSubmit}>
-              <div className="field">
+            <form className={styles.stackForm} onSubmit={handleUpdateSubmit}>
+              <div className={styles.field}>
                 <label htmlFor="title">Title</label>
                 <input
                   id="title"
@@ -254,7 +255,7 @@ function CaseDetailsPage() {
                 />
               </div>
 
-              <div className="field">
+              <div className={styles.field}>
                 <label htmlFor="description">Description</label>
                 <textarea
                   id="description"
@@ -268,7 +269,7 @@ function CaseDetailsPage() {
                 />
               </div>
 
-              <div className="field">
+              <div className={styles.field}>
                 <label htmlFor="status">Status</label>
                 <select
                   id="status"
@@ -287,7 +288,7 @@ function CaseDetailsPage() {
                 </select>
               </div>
 
-              <div className="field">
+              <div className={styles.field}>
                 <label htmlFor="priority">Priority</label>
                 <select
                   id="priority"
@@ -305,7 +306,7 @@ function CaseDetailsPage() {
                 </select>
               </div>
 
-              <div className="field">
+              <div className={styles.field}>
                 <label htmlFor="category">Category</label>
                 <select
                   id="category"
@@ -326,7 +327,7 @@ function CaseDetailsPage() {
                 </select>
               </div>
 
-              <div className="field">
+              <div className={styles.field}>
                 <label htmlFor="customerId">Customer</label>
                 <select
                   id="customerId"
@@ -345,7 +346,7 @@ function CaseDetailsPage() {
                 </select>
               </div>
 
-              <div className="field">
+              <div className={styles.field}>
                 <label htmlFor="assignedUserId">Assigned User</label>
                 <select
                   id="assignedUserId"
@@ -370,7 +371,7 @@ function CaseDetailsPage() {
                 </select>
               </div>
 
-              <div className="field">
+              <div className={styles.field}>
                 <label htmlFor="dueDate">Due Date</label>
                 <input
                   id="dueDate"
@@ -389,23 +390,23 @@ function CaseDetailsPage() {
                 />
               </div>
 
-              <div className="form-actions">
+              <div className={styles.formActions}>
                 <button
                   type="submit"
-                  className="primary-button"
+                  className={styles.primaryButton}
                   disabled={updateCaseMutation.isPending}
                 >
                   {updateCaseMutation.isPending ? "Saving..." : "Save Changes"}
                 </button>
               </div>
 
-              {updateMessage && <p className="form-message">{updateMessage}</p>}
+              {updateMessage && <p className={styles.formMessage}>{updateMessage}</p>}
             </form>
           </div>
 
-          <div className="panel">
+          <div className={styles.panel}>
             <h3>Customer</h3>
-            <div className="info-stack">
+            <div className={styles.infoStack}>
               <div>
                 <strong>Name</strong>
                 <p>{caseItem.customerName}</p>

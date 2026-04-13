@@ -5,6 +5,7 @@ import { getCases } from "../api/casesApi";
 import type { CaseQueryParams } from "../types/case";
 import StatusBadge from "../components/StatusBadge";
 import { getUsers } from "../api/usersApi";
+import styles from "./CasesPage.module.css";
 
 function CasesPage() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ function CasesPage() {
   const [priority, setPriority] = useState("");
   const [category, setCategory] = useState("");
   const [assignedUserId, setAssignedUserId] = useState("");
+
 
   const queryParams: CaseQueryParams = useMemo(() => {
     const params: CaseQueryParams = {};
@@ -38,17 +40,17 @@ function CasesPage() {
   });
 
   return (
-    <section className="cases-page">
-      <div className="page-header">
+    <section className={styles.casesPage}>
+      <div className={styles.pageHeader}>
         <div>
           <h2>Cases</h2>
           <p>Browse, search, and filter current cases.</p>
         </div>
       </div>
 
-      <div className="filters-panel">
-        <div className="filters-grid">
-          <div className="field">
+      <div className={styles.filtersPanel}>
+        <div className={styles.filtersGrid}>
+          <div className={styles.field}>
             <label htmlFor="search">Search</label>
             <input
               id="search"
@@ -59,7 +61,7 @@ function CasesPage() {
             />
           </div>
 
-          <div className="field">
+          <div className={styles.field}>
             <label htmlFor="status">Status</label>
             <select
               id="status"
@@ -75,7 +77,7 @@ function CasesPage() {
             </select>
           </div>
 
-          <div className="field">
+          <div className={styles.field}>
             <label htmlFor="priority">Priority</label>
             <select
               id="priority"
@@ -90,7 +92,7 @@ function CasesPage() {
             </select>
           </div>
 
-          <div className="field">
+          <div className={styles.field}>
             <label htmlFor="category">Category</label>
             <select
               id="category"
@@ -107,7 +109,7 @@ function CasesPage() {
               <option value="Other">Other</option>
             </select>
           </div>
-          <div className="field">
+          <div className={styles.field}>
             <label htmlFor="assignedUser">Assigned User</label>
             <select
               id="assignedUser"
@@ -126,45 +128,45 @@ function CasesPage() {
       </div>
 
       {isLoading && (
-        <div className="panel">
+        <div className={styles.panel}>
           <p>Loading cases...</p>
         </div>
       )}
 
       {isError && (
-        <div className="panel">
+        <div className={styles.panel}>
           <p>Failed to load cases.</p>
         </div>
       )}
 
       {!isLoading && !isError && data && data.length === 0 && (
-        <div className="panel">
+        <div className={styles.panel}>
           <p>No cases found for the current filters.</p>
         </div>
       )}
 
       {!isLoading && !isError && data && data.length > 0 && (
-        <div className="cases-list">
+        <div className={styles.casesList}>
           {data.map((caseItem) => (
             <button
               key={caseItem.id}
               type="button"
-              className="case-card"
+              className={styles.caseCard}
               onClick={() => navigate(`/cases/${caseItem.id}`)}
             >
-              <div className="case-card__top">
+              <div className={styles.caseCardTop}>
                 <div>
                   <h3>{caseItem.title}</h3>
                   <p>{caseItem.customerName}</p>
                 </div>
 
-                <div className="case-card__badges">
+                <div className={styles.caseCardBadges}>
                   <StatusBadge label={caseItem.status} />
                   <StatusBadge label={caseItem.priority} />
                 </div>
               </div>
 
-              <div className="case-card__meta">
+              <div className={styles.caseCardMeta}>
                 <span><strong>Category:</strong> {caseItem.category}</span>
                 <span><strong>Assigned:</strong> {caseItem.assignedUserName || "Unassigned"}</span>
                 <span><strong>Updated:</strong> {new Date(caseItem.updatedAt).toLocaleString()}</span>
