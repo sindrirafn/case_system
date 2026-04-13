@@ -142,4 +142,100 @@ public class CasesController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPost]
+    public async Task<ActionResult<CaseDetailsDto>> CreateCase(CreateCaseRequestDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Title))
+        {
+            return BadRequest("Title is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Description))
+        {
+            return BadRequest("Description is required.");
+        }
+
+        var customerExists = await _context.Customers.AnyAsync(c => c.Id == request.CustomerId);
+        if (!customerExists)
+        {
+            return BadRequest("Customer does not exist.");
+        }
+
+        var createdByUserExists = await _context.Users.AnyAsync(u => u.Id == request.CreatedByUserId);
+        if (!createdByUserExists)
+        {
+            return BadRequest("CreatedByUser does not exist.");
+        }
+
+        if (request.AssignedUserId.HasValue)
+        {
+            var assignedUserExists = await _context.Users.AnyAsync(u => u.Id == request.AssignedUserId.Value);
+            if (!assignedUserExists)
+            {
+                return BadRequest("Assigned user does not exist.");
+            }
+        }
+
+        var caseItem = new Models.Case
+        {
+            Title = request.Title.Trim(),
+            Description = request.Description.Trim(),
+            Status = string.IsNullOrWhiteSpace(request.Status) ? "New" : request.Status.Trim(),
+            Priority = string.IsNullOrWhiteSpace(request.Priority) ? "Medium" : request.Priority.Trim(),
+            Category = string.IsNullOrWhiteSpace(request.Category) ? "Other" : request.Category.Trim(),
+            CustomerId = request.CustomerId,
+            AssignedUserId = request.AssignedUserId,
+            CreatedByUserId = request.CreatedByUserId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            DueDate = request.DueDate
+        };
+
+        _context.Cases.Add(caseItem);
+        await _context.SaveChangesAsync();
+
+        var createdCase = await _context.Cases
+            .AsNoTracking()
+            .Include(c => c.Customer)
+            .Include(c => c.AssignedUser)
+            .Include(c => c.CreatedByUser)
+            .Include(c => c.Comments)
+                .ThenInclude(comment => comment.User)
+            .FirstAsync(c => c.Id == caseItem.Id);
+
+        var result = new CaseDetailsDto
+        {
+            Id = createdCase.Id,
+            Title = createdCase.Title,
+            Description = createdCase.Description,
+            Status = createdCase.Status,
+            Priority = createdCase.Priority,
+            Category = createdCase.Category,
+
+            CustomerId = createdCase.CustomerId,
+            CustomerName = createdCase.Customer?.Name ?? "",
+            CustomerEmail = createdCase.Customer?.Email ?? "",
+            CustomerCompanyName = createdCase.Customer?.CompanyName ?? "",
+            CustomerPhoneNumber = createdCase.Customer?.PhoneNumber ?? "",
+
+            AssignedUserId = createdCase.AssignedUserId,
+            AssignedUserName = createdCase.AssignedUser != null
+                ? $"{createdCase.AssignedUser.FirstName} {createdCase.AssignedUser.LastName}"
+                : "",
+
+            CreatedByUserId = createdCase.CreatedByUserId,
+            CreatedByUserName = createdCase.CreatedByUser != null
+                ? $"{createdCase.CreatedByUser.FirstName} {createdCase.CreatedByUser.LastName}"
+                : "",
+
+            CreatedAt = createdCase.CreatedAt,
+            UpdatedAt = createdCase.UpdatedAt,
+            DueDate = createdCase.DueDate,
+
+            Comments = new List<CaseCommentDto>()
+        };
+
+        return CreatedAtAction(nameof(GetCaseById), new { id = createdCase.Id }, result);
+    }
 }
