@@ -34,6 +34,14 @@ public class DashboardController : ControllerBase
         var casesAssignedToUser = 0;
         if (userId.HasValue)
         {
+            var userExists = await _context.Users.AnyAsync(u => u.Id == userId.Value);
+            if (!userExists)
+            {
+                return BadRequest("User does not exist.");
+            }
+        }
+        if (userId.HasValue)
+        {
             casesAssignedToUser = await _context.Cases
                 .AsNoTracking()
                 .CountAsync(c => c.AssignedUserId == userId.Value && openStatuses.Contains(c.Status));
