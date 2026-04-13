@@ -17,12 +17,47 @@ public class CasesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<CaseListItemDto>>> GetCases()
+    public async Task<ActionResult<List<CaseListItemDto>>> GetCases([FromQuery] CaseQueryParametersDto query)
     {
-        var cases = await _context.Cases
+        var casesQuery = _context.Cases
             .AsNoTracking()
             .Include(c => c.Customer)
             .Include(c => c.AssignedUser)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(query.Status))
+        {
+            var status = query.Status.Trim().ToLower();
+            casesQuery = casesQuery.Where(c => c.Status.ToLower() == status);
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.Priority))
+        {
+            var priority = query.Priority.Trim().ToLower();
+            casesQuery = casesQuery.Where(c => c.Priority.ToLower() == priority);
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.Category))
+        {
+            var category = query.Category.Trim().ToLower();
+            casesQuery = casesQuery.Where(c => c.Category.ToLower() == category);
+        }
+
+        if (query.AssignedUserId.HasValue)
+        {
+            casesQuery = casesQuery.Where(c => c.AssignedUserId == query.AssignedUserId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.Search))
+        {
+            var searchTerm = query.Search.Trim().ToLower();
+
+            casesQuery = casesQuery.Where(c =>
+                c.Title.ToLower().Contains(searchTerm) ||
+                c.Description.ToLower().Contains(searchTerm));
+        }
+
+        var cases = await casesQuery
             .OrderByDescending(c => c.UpdatedAt)
             .Select(c => new CaseListItemDto
             {
