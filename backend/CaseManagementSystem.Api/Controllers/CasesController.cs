@@ -339,4 +339,50 @@ public class CasesController : ControllerBase
 
         return Ok(result);
     }
+    [HttpPost("{id:int}/comments")]
+    public async Task<ActionResult<CaseCommentDto>> AddComment(int id, AddCommentRequestDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Content))
+        {
+            return BadRequest("Comment content is required.");
+        }
+
+        var caseExists = await _context.Cases.AnyAsync(c => c.Id == id);
+        if (!caseExists)
+        {
+            return NotFound("Case not found.");
+        }
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
+        if (user == null)
+        {
+            return BadRequest("User does not exist.");
+        }
+
+        var comment = new Models.Comment
+        {
+            CaseId = id,
+            UserId = request.UserId,
+            Content = request.Content.Trim(),
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Comments.Add(comment);
+
+        var caseItem = await _context.Cases.FirstAsync(c => c.Id == id);
+        caseItem.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        var result = new CaseCommentDto
+        {
+            Id = comment.Id,
+            UserId = comment.UserId,
+            UserName = $"{user.FirstName} {user.LastName}",
+            Content = comment.Content,
+            CreatedAt = comment.CreatedAt
+        };
+
+        return Ok(result);
+    }
 }
