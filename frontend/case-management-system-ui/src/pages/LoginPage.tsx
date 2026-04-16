@@ -1,16 +1,17 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { login } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
 import styles from "./LoginPage.module.css";
 
+
 function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { loginUser } = useAuth();
-
+  // const { loginUser } = useAuth();
+  const { user, loginUser } = useAuth();
   const [email, setEmail] = useState("sindri.admin@casevia.local");
   const [password, setPassword] = useState("Password123!");
   const [message, setMessage] = useState("");
@@ -34,6 +35,10 @@ function LoginPage() {
       setMessage("Invalid email or password.");
     }
   });
+
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
