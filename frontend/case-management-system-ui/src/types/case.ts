@@ -64,3 +64,15 @@ export interface AddCommentRequest {
   userId: number;
   content: string;
 }
+
+export interface CreateCaseRequest {
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  category: string;
+  customerId: number;
+  assignedUserId: number | null;
+  createdByUserId: number;
+  dueDate: string | null;
+}

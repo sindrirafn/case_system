@@ -4,6 +4,7 @@ import type {
   CaseDetails,
   CaseListItem,
   CaseQueryParams,
+  CreateCaseRequest,
   UpdateCaseRequest
 } from "../types/case";
 
@@ -17,6 +18,11 @@ export async function getCases(params?: CaseQueryParams) {
 
 export async function getCaseById(id: number) {
   const response = await apiClient.get<CaseDetails>(`/cases/${id}`);
+  return response.data;
+}
+
+export async function createCase(request: CreateCaseRequest) {
+  const response = await apiClient.post<CaseDetails>("/cases", request);
   return response.data;
 }
 
