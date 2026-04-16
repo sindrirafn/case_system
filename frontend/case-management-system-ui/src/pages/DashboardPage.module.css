@@ -1,0 +1,105 @@
+.page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 1rem;
+}
+
+.pageHeader h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.5rem;
+}
+
+.pageHeader p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+  gap: 1rem;
+}
+
+.sideColumn {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.panel {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.panelHeader {
+  margin-bottom: 1rem;
+}
+
+.panelHeader h3 {
+  margin: 0 0 0.35rem;
+}
+
+.panelHeader p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.healthList {
+  display: grid;
+  gap: 1rem;
+}
+
+.healthItem strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.healthItem p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.riskText {
+  font-weight: 700;
+  color: #111827;
+}
+
+.notesList {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #4b5563;
+  display: grid;
+  gap: 0.5rem;
+}
+
+@media (max-width: 1100px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}
