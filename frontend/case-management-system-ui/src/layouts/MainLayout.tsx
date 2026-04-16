@@ -1,7 +1,9 @@
 import { NavLink, Outlet } from "react-router-dom";
 import styles from "./MainLayout.module.css";
+import { useAuth } from "../context/AuthContext";
 
 function MainLayout() {
+  const { user, logoutUser } = useAuth();
   return (
     <div className={styles.appShell}>
       <aside className={styles.sidebar}>
@@ -15,7 +17,7 @@ function MainLayout() {
             to="/dashboard"
             className={({ isActive }) =>
               `${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
-            } 
+            }
           >
             Dashboard
           </NavLink>
@@ -44,6 +46,13 @@ function MainLayout() {
             Users
           </NavLink>
         </nav>
+        <div className={styles.userSection}>
+          <p className={styles.userName}>{user?.fullName}</p>
+          <p className={styles.userRole}>{user?.role}</p>
+          <button type="button" className={styles.logoutButton} onClick={logoutUser}>
+            Log Out
+          </button>
+        </div>
       </aside>
 
       <div className={styles.mainContent}>

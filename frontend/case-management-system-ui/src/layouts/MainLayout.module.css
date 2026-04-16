@@ -64,6 +64,33 @@
   padding: 1.5rem;
 }
 
+.userSection {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.userName {
+  margin: 0 0 0.2rem;
+  font-weight: 600;
+}
+
+.userRole {
+  margin: 0 0 0.75rem;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.logoutButton {
+  border: none;
+  background: #1f2937;
+  color: white;
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font: inherit;
+}
+
 @media (max-width: 960px) {
   .appShell {
     grid-template-columns: 1fr;
