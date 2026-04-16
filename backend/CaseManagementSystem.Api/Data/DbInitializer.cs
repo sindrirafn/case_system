@@ -1,5 +1,5 @@
 using CaseManagementSystem.Api.Models;
-
+using CaseManagementSystem.Api.Services;
 
 namespace CaseManagementSystem.Api.Data;
 
@@ -8,7 +8,7 @@ namespace CaseManagementSystem.Api.Data;
 public static class DbInitializer
 {
     private static readonly Random _random = new();
-    public static void Seed(AppDbContext context)
+    public static void Seed(AppDbContext context, PasswordService passwordService)
     {
         if (context.Users.Any() || context.Customers.Any() || context.Cases.Any() || context.Comments.Any())
         {
@@ -22,7 +22,7 @@ public static class DbInitializer
                 FirstName = "Sindri",
                 LastName = "Admin",
                 Email = "sindri.admin@casevia.local",
-                PasswordHash = "demo-hash",
+                PasswordHash = passwordService.HashPassword("Password123!"),
                 Role = "Admin",
                 Team = "Operations"
             },
@@ -31,7 +31,7 @@ public static class DbInitializer
                 FirstName = "Anna",
                 LastName = "Jonsdottir",
                 Email = "anna.jonsdottir@casevia.local",
-                PasswordHash = "demo-hash",
+                PasswordHash = passwordService.HashPassword("Password123!"),
                 Role = "Agent",
                 Team = "Support"
             },
@@ -40,7 +40,7 @@ public static class DbInitializer
                 FirstName = "Bjorn",
                 LastName = "Sigurdsson",
                 Email = "bjorn.sigurdsson@casevia.local",
-                PasswordHash = "demo-hash",
+                PasswordHash = passwordService.HashPassword("Password123!"),
                 Role = "Agent",
                 Team = "Support"
             },
@@ -49,7 +49,7 @@ public static class DbInitializer
                 FirstName = "Elin",
                 LastName = "Gunnarsdottir",
                 Email = "elin.gunnarsdottir@casevia.local",
-                PasswordHash = "demo-hash",
+                PasswordHash = passwordService.HashPassword("Password123!"),
                 Role = "Agent",
                 Team = "Infrastructure"
             },
@@ -58,7 +58,7 @@ public static class DbInitializer
                 FirstName = "Klara",
                 LastName = "Manager",
                 Email = "klara.manager@casevia.local",
-                PasswordHash = "demo-hash",
+                PasswordHash = passwordService.HashPassword("Password123!"),
                 Role = "Viewer",
                 Team = "Management"
             }
